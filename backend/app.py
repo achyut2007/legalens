@@ -71,7 +71,8 @@ def analyze_with_ai(text):
 
     try:
         prompt = f"""
-        You are a legal AI. Output valid JSON only. Do not use Markdown blocks.
+        You are a legal AI. Output valid JSON only. Do not use Markdown blocks. Exactly five points and do not number them. For risks, provide id, type (High/Medium/Low), category (e.g. Privacy, Liability), title, explanation, and a snippet from the text that triggered the risk.
+        make the summary concise and the risks specific.
         {{
             "summary": ["Point 1", "Point 2", "Point 3", "Point 4", "Point 5"],
             "risks": [
