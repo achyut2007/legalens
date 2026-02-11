@@ -98,7 +98,7 @@ const Navbar = ({ isDarkMode, toggleTheme, reset, status }) => (
           <ShieldCheck className="w-5 h-5 text-white" />
         </div>
         <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">
-          LegalLens
+          LegaLens
         </span>
       </div>
 
