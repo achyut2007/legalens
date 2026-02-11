@@ -10,80 +10,10 @@ import {
   ShieldCheck,
   AlertTriangle,
   ChevronRight,
-  ChevronDown,
   PlusCircle,
   Sparkles,
   ArrowRight
 } from 'lucide-react';
-
-// ==========================================
-// FILE: src/data/mockData.js
-// ==========================================
-
-const MOCK_CONTRACT_TEXT = `TERMS OF SERVICE AND USER AGREEMENT
-
-1. ACCEPTANCE OF TERMS
-By accessing this website, you are agreeing to be bound by these web site Terms and Conditions of Use, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws.
-
-2. DATA OWNERSHIP AND PRIVACY
-The Service Provider reserves the right to collect, store, and sell anonymized user data to third-party advertisers for the purpose of improving service delivery and targeted marketing. User content uploaded to the platform becomes the joint intellectual property of the User and the Service Provider. The Service Provider retains a perpetual, irrevocable, worldwide, royalty-free license to use, reproduce, and display such content.
-
-3. SUBSCRIPTION AND BILLING
-Subscriptions renew automatically unless cancelled 30 days prior to the renewal date. We reserve the right to increase subscription fees at any time without prior notice to the user. No refunds will be issued for partial months of service.
-
-4. LIMITATION OF LIABILITY
-In no event shall the Service Provider or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on the Service Provider's Internet site.
-
-5. ARBITRATION AND GOVERNING LAW
-Any claim relating to the Service Provider's web site shall be governed by the laws of the State of Delaware without regard to its conflict of law provisions. Any dispute arising from this agreement shall be settled by binding arbitration conducted in Bermuda, and the user explicitly waives their right to a trial by jury or to participate in a class-action lawsuit.
-
-6. TERMINATION
-We may terminate or suspend access to our Service immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.`;
-
-const MOCK_ANALYSIS = {
-  fileName: "startup_service_agreement.pdf",
-  summary: [
-    "Users grant the platform a perpetual license to their content.",
-    "Data can be sold to third-party advertisers.",
-    "Subscriptions auto-renew with a 30-day cancellation notice requirement.",
-    "Binding arbitration is required, waiving jury trial rights.",
-    "Service can be terminated at any time without notice."
-  ],
-  risks: [
-    {
-      id: 1,
-      type: "High",
-      title: "Data Selling & IP Rights",
-      snippet: "collect, store, and sell anonymized user data to third-party advertisers",
-      explanation: "The provider explicitly states they can sell your data. Additionally, they claim joint ownership of your uploaded content.",
-      category: "Privacy"
-    },
-    {
-      id: 2,
-      type: "High",
-      title: "Binding Arbitration / Class Action Waiver",
-      snippet: "binding arbitration conducted in Bermuda, and the user explicitly waives their right",
-      explanation: "Forced arbitration in a foreign jurisdiction (Bermuda) makes it extremely expensive and difficult for you to sue them. You also lose the right to join class actions.",
-      category: "Legal Recourse"
-    },
-    {
-      id: 3,
-      type: "Medium",
-      title: "Unilateral Fee Changes",
-      snippet: "increase subscription fees at any time without prior notice",
-      explanation: "They can raise prices whenever they want without telling you first. Standard clauses usually require 30 days notice.",
-      category: "Financial"
-    },
-    {
-      id: 4,
-      type: "Medium",
-      title: "Termination Without Cause",
-      snippet: "terminate or suspend access to our Service immediately, without prior notice",
-      explanation: "They can ban you instantly for 'any reason whatsoever', threatening business continuity.",
-      category: "Operational"
-    }
-  ]
-};
 
 // ==========================================
 // FILE: src/components/ui/Typewriter.jsx
@@ -244,7 +174,7 @@ const HeroSection = ({ onUpload, status, progress }) => (
         </label>
       ) : (
         /* In-Place Loader */
-        <div className="flex flex-col items-center justify-center w-full h-64 rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-8 animate-in fade-in zoom-in-95 duration-300 transition-colors">
+        <div className="flex flex-col items-center justify-center w-full h-64 rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-8 animate-in fade-in zoom-in-95 transition-colors duration-300">
           <div className="w-full max-w-md space-y-6">
             <div className="flex flex-col items-center gap-4">
               {status === 'analyzing' ? (
@@ -376,9 +306,11 @@ const RiskList = ({ risks, activeRiskId, onRiskClick }) => (
 const DocumentViewer = ({ data, activeRiskId, setActiveRiskId }) => {
   if (!data) return null;
 
-  // Simplified highlighter logic
+  // Use text from backend
+  const textContent = data.text;
+
+  // Highlighter logic
   const renderText = () => {
-    let textContent = MOCK_CONTRACT_TEXT;
     const sortedRisks = [...data.risks].sort((a, b) => b.snippet.length - a.snippet.length);
 
     return (
@@ -389,6 +321,7 @@ const DocumentViewer = ({ data, activeRiskId, setActiveRiskId }) => {
           sortedRisks.forEach(risk => {
             const newContent = [];
             lineContent.forEach(segment => {
+              // Check if the segment contains the risk snippet
               if (typeof segment === 'string' && segment.includes(risk.snippet)) {
                 const parts = segment.split(risk.snippet);
                 parts.forEach((part, i) => {
@@ -403,6 +336,7 @@ const DocumentViewer = ({ data, activeRiskId, setActiveRiskId }) => {
                            ${activeRiskId === risk.id ? 'scale-105 shadow-sm ring-2 ring-indigo-500 z-10 relative' : ''}
                            ${risk.type === 'High' ? 'bg-red-200/50 dark:bg-red-900/40 text-red-900 dark:text-red-200 border-b-2 border-red-400' : ''}
                            ${risk.type === 'Medium' ? 'bg-amber-200/50 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 border-b-2 border-amber-400' : ''}
+                           ${risk.type === 'Low' ? 'bg-emerald-200/50 dark:bg-emerald-900/40 text-emerald-900 dark:text-emerald-200 border-b-2 border-emerald-400' : ''}
                          `}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -436,7 +370,7 @@ const DocumentViewer = ({ data, activeRiskId, setActiveRiskId }) => {
           </div>
           <div>
             <h3 className="font-semibold text-slate-900 dark:text-white text-sm sm:text-base transition-colors duration-300">{data.fileName}</h3>
-            <p className="text-xs text-slate-500 transition-colors duration-300">Scanned just now • 12KB</p>
+            <p className="text-xs text-slate-500 transition-colors duration-300">Scanned just now • {Math.round(textContent.length / 1024)}KB</p>
           </div>
         </div>
         <div className="text-xs font-medium px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-500 flex items-center gap-1 transition-colors duration-300">
@@ -487,34 +421,59 @@ export default function App() {
     }
   };
 
-  // Simulate File Upload and Analysis
-  const handleFileUpload = (e) => {
+  // ------------------------------------------------------------------------
+  // REAL BACKEND CONNECTION
+  // ------------------------------------------------------------------------
+  const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setStatus('uploading');
     setUploadProgress(0);
 
-    // Simulate upload progress
+    // 1. Progress Bar Animation (Fake visual progress while real upload happens)
     let progress = 0;
     const interval = setInterval(() => {
-      progress += Math.floor(Math.random() * 15) + 5;
-      if (progress > 90) progress = 90; // Hold at 90 until complete
+      progress += Math.floor(Math.random() * 10) + 2;
+      if (progress > 90) progress = 90;
       setUploadProgress(progress);
     }, 200);
 
-    // Simulate Network Request
-    setTimeout(() => {
+    // 2. Prepare Data
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      // 3. Send to Flask Backend
+      // Using 127.0.0.1 avoids issues where 'localhost' resolves to IPv6 on some machines
+      const response = await fetch('http://127.0.0.1:5000/analyze', {
+        method: 'POST',
+        body: formData,
+      });
+
       clearInterval(interval);
       setUploadProgress(100);
       setStatus('analyzing');
 
-      // Simulate Backend Processing
+      if (!response.ok) {
+        throw new Error('Server returned error');
+      }
+
+      // 4. Parse Result
+      const result = await response.json();
+
+      // Artificial delay to let the user see the "Analyzing" state for a moment
       setTimeout(() => {
-        setData(MOCK_ANALYSIS);
+        setData(result);
         setStatus('complete');
-      }, 1500);
-    }, 1500);
+      }, 800);
+
+    } catch (error) {
+      console.error("Upload failed:", error);
+      clearInterval(interval);
+      setStatus('idle');
+      alert("Connection Failed! Ensure 'python app.py' is running on port 5000.");
+    }
   };
 
   const handleReset = () => {
@@ -524,11 +483,9 @@ export default function App() {
     setActiveRiskId(null);
   };
 
-  // Mock download function for the summary
   const handleDownloadSummary = () => {
     if (!data) return;
 
-    // Create formatted text content
     const reportContent = `
 LEGAL LENS - CONTRACT ANALYSIS REPORT
 =====================================
@@ -549,7 +506,6 @@ Snippet: "${r.snippet}"
 `).join('')}
     `.trim();
 
-    // Create blob and trigger download
     const blob = new Blob([reportContent], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -563,7 +519,6 @@ Snippet: "${r.snippet}"
 
   return (
     <>
-      {/* Dynamic Scrollbar Styles and Animations */}
       <style>{`
         ::-webkit-scrollbar { width: 10px; height: 10px; }
         ::-webkit-scrollbar-track { background: ${isDarkMode ? '#0f172a' : '#f1f5f9'}; }
@@ -593,14 +548,12 @@ Snippet: "${r.snippet}"
 
         <main className="max-w-7xl mx-auto px-4 py-8">
 
-          {/* Render HeroSection during idle, uploading, AND analyzing states to keep the headline visible */}
           {status !== 'complete' && (
             <HeroSection onUpload={handleFileUpload} status={status} progress={uploadProgress} />
           )}
 
           {status === 'complete' && data && (
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-[calc(100vh-8rem)] animate-in fade-in slide-in-from-bottom-8 duration-700">
-              {/* LEFT COLUMN: INTELLIGENCE */}
               <div className="md:col-span-4 flex flex-col gap-6 h-full overflow-y-auto pr-2 pb-10 scrollbar-hide">
                 <SummaryCard summary={data.summary} onDownload={handleDownloadSummary} />
                 <RiskList
@@ -610,7 +563,6 @@ Snippet: "${r.snippet}"
                 />
               </div>
 
-              {/* RIGHT COLUMN: EVIDENCE */}
               <DocumentViewer
                 data={data}
                 activeRiskId={activeRiskId}
