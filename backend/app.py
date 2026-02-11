@@ -133,10 +133,10 @@ def analyze_risks_fallback(text):
             if id_counter > 6: break
             
     return risks
-
-@app.route('/')
-def home():
-    redirect "https://legalens-ghost007.vercel.app/"
+@app.route('/', methods=['GET'])
+def health_check():
+    return jsonify({"status": "live", "message": "LegalLens Backend is Running!"}), 200
+    
 @app.route('/analyze', methods=['GET', 'POST'])
 def analyze_endpoint():
     # Allow GET for simple browser testing
@@ -187,9 +187,7 @@ def analyze_endpoint():
     except Exception as e:
         print(f"Server Error: {e}")
         return jsonify({"error": "Internal server error"}), 500
-@app.route('/', methods=['GET'])
-def health_check():
-    return jsonify({"status": "live", "message": "LegalLens Backend is Running!"}), 200
+
 
 if __name__ == '__main__':
     app.run(port=5000)
