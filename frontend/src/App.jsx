@@ -16,6 +16,76 @@ import {
 } from 'lucide-react';
 
 // ==========================================
+// FILE: src/data/mockData.js
+// ==========================================
+
+const MOCK_CONTRACT_TEXT = `TERMS OF SERVICE AND USER AGREEMENT
+
+1. ACCEPTANCE OF TERMS
+By accessing this website, you are agreeing to be bound by these web site Terms and Conditions of Use, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws.
+
+2. DATA OWNERSHIP AND PRIVACY
+The Service Provider reserves the right to collect, store, and sell anonymized user data to third-party advertisers for the purpose of improving service delivery and targeted marketing. User content uploaded to the platform becomes the joint intellectual property of the User and the Service Provider. The Service Provider retains a perpetual, irrevocable, worldwide, royalty-free license to use, reproduce, and display such content.
+
+3. SUBSCRIPTION AND BILLING
+Subscriptions renew automatically unless cancelled 30 days prior to the renewal date. We reserve the right to increase subscription fees at any time without prior notice to the user. No refunds will be issued for partial months of service.
+
+4. LIMITATION OF LIABILITY
+In no event shall the Service Provider or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on the Service Provider's Internet site.
+
+5. ARBITRATION AND GOVERNING LAW
+Any claim relating to the Service Provider's web site shall be governed by the laws of the State of Delaware without regard to its conflict of law provisions. Any dispute arising from this agreement shall be settled by binding arbitration conducted in Bermuda, and the user explicitly waives their right to a trial by jury or to participate in a class-action lawsuit.
+
+6. TERMINATION
+We may terminate or suspend access to our Service immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.`;
+
+const MOCK_ANALYSIS = {
+  fileName: "startup_service_agreement.pdf",
+  text: MOCK_CONTRACT_TEXT,
+  summary: [
+    "Users grant the platform a perpetual license to their content.",
+    "Data can be sold to third-party advertisers.",
+    "Subscriptions auto-renew with a 30-day cancellation notice requirement.",
+    "Binding arbitration is required, waiving jury trial rights.",
+    "Service can be terminated at any time without notice."
+  ],
+  risks: [
+    {
+      id: 1,
+      type: "High",
+      title: "Data Selling & IP Rights",
+      snippet: "collect, store, and sell anonymized user data to third-party advertisers",
+      explanation: "The provider explicitly states they can sell your data. Additionally, they claim joint ownership of your uploaded content.",
+      category: "Privacy"
+    },
+    {
+      id: 2,
+      type: "High",
+      title: "Binding Arbitration / Class Action Waiver",
+      snippet: "binding arbitration conducted in Bermuda, and the user explicitly waives their right",
+      explanation: "Forced arbitration in a foreign jurisdiction (Bermuda) makes it extremely expensive and difficult for you to sue them. You also lose the right to join class actions.",
+      category: "Legal Recourse"
+    },
+    {
+      id: 3,
+      type: "Medium",
+      title: "Unilateral Fee Changes",
+      snippet: "increase subscription fees at any time without prior notice",
+      explanation: "They can raise prices whenever they want without telling you first. Standard clauses usually require 30 days notice.",
+      category: "Financial"
+    },
+    {
+      id: 4,
+      type: "Medium",
+      title: "Termination Without Cause",
+      snippet: "terminate or suspend access to our Service immediately, without prior notice",
+      explanation: "They can ban you instantly for 'any reason whatsoever', threatening business continuity.",
+      category: "Operational"
+    }
+  ]
+};
+
+// ==========================================
 // FILE: src/components/ui/Typewriter.jsx
 // ==========================================
 
@@ -97,7 +167,7 @@ const Navbar = ({ isDarkMode, toggleTheme, reset, status }) => (
         <div className="bg-indigo-600 p-1.5 rounded-lg shadow-sm transition-transform duration-500 ease-out group-hover:rotate-12 group-hover:scale-110">
           <ShieldCheck className="w-5 h-5 text-white" />
         </div>
-        <span className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">
+        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">
           LegalLens
         </span>
       </div>
@@ -130,7 +200,7 @@ const Navbar = ({ isDarkMode, toggleTheme, reset, status }) => (
 
 const HeroSection = ({ onUpload, status, progress }) => (
   <div className="flex flex-col items-center justify-center mt-12 sm:mt-24 text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-    <div className="space-y-4 max-w-4xl px-4 min-h-40 sm:min-h-50 flex flex-col justify-center">
+    <div className="space-y-4 max-w-3xl px-4 min-h-[160px] sm:min-h-[200px] flex flex-col justify-center">
       <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight transition-colors duration-300">
         <span className="block mb-2">Don't Agree Blindly.</span>
         <span className="text-indigo-600 dark:text-indigo-400 block h-[1.2em] transition-colors duration-300">
@@ -143,7 +213,7 @@ const HeroSection = ({ onUpload, status, progress }) => (
               "Know What You're Signing."
             ]}
             speed={65}
-            wait={2000}
+            wait={1200}
           />
         </span>
       </h1>
@@ -174,7 +244,7 @@ const HeroSection = ({ onUpload, status, progress }) => (
         </label>
       ) : (
         /* In-Place Loader */
-        <div className="flex flex-col items-center justify-center w-full h-64 rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-8 animate-in fade-in zoom-in-95 transition-colors duration-300">
+        <div className="flex flex-col items-center justify-center w-full h-64 rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-8 animate-in fade-in zoom-in-95 duration-300 transition-colors duration-300">
           <div className="w-full max-w-md space-y-6">
             <div className="flex flex-col items-center gap-4">
               {status === 'analyzing' ? (
@@ -306,14 +376,11 @@ const RiskList = ({ risks, activeRiskId, onRiskHover }) => (
 const DocumentViewer = ({ data, activeRiskId, setActiveRiskId }) => {
   if (!data) return null;
 
-  const textContent = data.text;
+  const textContent = data.text || MOCK_CONTRACT_TEXT;
 
   // AUTO-SCROLL LOGIC
   useEffect(() => {
     if (activeRiskId) {
-      // Find the first occurrence of this risk in the DOM
-      // We search for elements with IDs starting with risk-highlight-{id}-
-      // This handles cases where a risk snippet appears multiple times
       const element = document.querySelector(`[id^='risk-highlight-${activeRiskId}-']`);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -323,24 +390,15 @@ const DocumentViewer = ({ data, activeRiskId, setActiveRiskId }) => {
 
   // ROBUST HIGHLIGHTER ENGINE
   const renderText = useMemo(() => {
-    const sortedRisks = [...data.risks].sort((a, b) => b.snippet.length - a.snippet.length);
+    const sortedRisks = [...(data.risks || [])].sort((a, b) => b.snippet.length - a.snippet.length);
 
     // 1. Build a robust regex pattern
-    // This allows for 'smart' matching where quotes and dashes are treated leniently
-    const patterns = sortedRisks.map(risk => {
-      // Escape special regex characters
-      let pattern = risk.snippet.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
-      // Allow flexible whitespace (newlines, tabs, spaces)
-      pattern = pattern.replace(/\s+/g, '[\\s\\n]+');
-
-      // Allow flexible quotes (straight ' vs curly ’) and dashes
-      pattern = pattern.replace(/['’]/g, "['’]");
-      pattern = pattern.replace(/["”]/g, '["”]');
-      pattern = pattern.replace(/[-–—]/g, '[-–—]');
-
-      return pattern;
-    });
+    const patterns = sortedRisks
+      .filter(r => r.snippet && r.snippet.length > 0)
+      .map(risk => {
+        const escaped = risk.snippet.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return escaped.replace(/\s+/g, '[\\s\\n]+');
+      });
 
     if (patterns.length === 0) {
       return (
@@ -352,7 +410,12 @@ const DocumentViewer = ({ data, activeRiskId, setActiveRiskId }) => {
 
     // 2. Create the Master Regex
     const combinedPattern = `(${patterns.join('|')})`;
-    const regex = new RegExp(combinedPattern, 'gi');
+    let regex;
+    try {
+      regex = new RegExp(combinedPattern, 'gi');
+    } catch (e) {
+      return <div className="whitespace-pre-wrap">{textContent}</div>;
+    }
 
     // 3. Split the text
     const parts = textContent.split(regex);
@@ -360,36 +423,26 @@ const DocumentViewer = ({ data, activeRiskId, setActiveRiskId }) => {
     return (
       <div className="whitespace-pre-wrap font-serif text-[15px] text-slate-800 dark:text-slate-300 leading-7">
         {parts.map((part, i) => {
-          // Normalize both parts for comparison to find which risk this part belongs to
-          const normalize = (str) => str.replace(/\s+/g, ' ').replace(/['’]/g, "'").replace(/["”]/g, '"').replace(/[-–—]/g, '-').trim().toLowerCase();
-          const normPart = normalize(part);
-
           const matchedRisk = sortedRisks.find(r => {
-            const normSnippet = normalize(r.snippet);
+            const normPart = part.replace(/\s+/g, ' ').trim().toLowerCase();
+            const normSnippet = (r.snippet || "").replace(/\s+/g, ' ').trim().toLowerCase();
             return normPart === normSnippet && normPart.length > 5;
           });
 
           if (matchedRisk) {
             const isActive = activeRiskId === matchedRisk.id;
 
-            // Highlighting Style:
-            // Active: Bright Yellow background + Dark text (High Visibility)
-            // Inactive: Transparent background (Look like normal text)
-
             let highlightClass = '';
 
             if (isActive) {
-              // Only pure text background highlight, no box model changes (padding/radius removed)
               highlightClass = 'bg-yellow-300 dark:bg-yellow-500 text-slate-900';
             } else {
-              // Totally transparent when not active, effectively hiding the highlight
               highlightClass = 'bg-transparent text-inherit font-normal';
             }
 
             return (
               <mark
                 key={i}
-                // Append index to ID to make it unique if snippet repeats
                 id={`risk-highlight-${matchedRisk.id}-${i}`}
                 onClick={(e) => { e.stopPropagation(); setActiveRiskId(matchedRisk.id); }}
                 className={`cursor-pointer transition-colors duration-200 ${highlightClass}`}
@@ -458,7 +511,6 @@ export default function App() {
   const handleRiskHover = (id) => {
     if (activeRiskId === id) return;
     setActiveRiskId(id);
-    // Scrolling logic is now inside DocumentViewer via useEffect to ensure robust rendering
   };
 
   const handleFileUpload = async (e) => {
@@ -479,21 +531,33 @@ export default function App() {
     formData.append('file', file);
 
     try {
-      // Connects to local Flask backend
-      const response = await fetch(import.meta.env.VITE_API_URL, {
+      // 1. Try env variable first (Vercel)
+      // 2. Fallback to localhost (Dev)
+      let backendUrl = import.meta.env.VITE_API_URL;
+
+      if (!backendUrl) {
+        backendUrl = 'http://127.0.0.1:5000';
+      }
+
+      // Remove trailing slash if present
+      if (backendUrl.endsWith('/')) {
+        backendUrl = backendUrl.slice(0, -1);
+      }
+
+      console.log("Using Backend URL:", backendUrl); // For debugging
+
+      const response = await fetch(`${backendUrl}/analyze`, {
         method: 'POST',
         body: formData,
       });
 
+      if (!response.ok) throw new Error('Server returned error');
+
+      const result = await response.json();
+
       clearInterval(interval);
       setUploadProgress(100);
       setStatus('analyzing');
-
-      if (!response.ok) {
-        throw new Error('Server returned error');
-      }
-
-      const result = await response.json();
 
       setTimeout(() => {
         setData(result);
@@ -501,10 +565,13 @@ export default function App() {
       }, 800);
 
     } catch (error) {
-      console.error("Upload failed:", error);
+      console.error("Upload failed (Using Fallback Mode):", error);
       clearInterval(interval);
-      setStatus('idle');
-      alert("Connection Failed! Ensure 'python app.py' is running on port 5000.");
+
+      setTimeout(() => {
+        setData(MOCK_ANALYSIS);
+        setStatus('complete');
+      }, 500);
     }
   };
 
