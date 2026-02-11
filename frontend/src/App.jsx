@@ -167,7 +167,7 @@ const Navbar = ({ isDarkMode, toggleTheme, reset, status }) => (
         <div className="bg-indigo-600 p-1.5 rounded-lg shadow-sm transition-transform duration-500 ease-out group-hover:rotate-12 group-hover:scale-110">
           <ShieldCheck className="w-5 h-5 text-white" />
         </div>
-        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">
+        <span className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300">
           LegalLens
         </span>
       </div>
@@ -200,7 +200,7 @@ const Navbar = ({ isDarkMode, toggleTheme, reset, status }) => (
 
 const HeroSection = ({ onUpload, status, progress }) => (
   <div className="flex flex-col items-center justify-center mt-12 sm:mt-24 text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-    <div className="space-y-4 max-w-3xl px-4 min-h-[160px] sm:min-h-[200px] flex flex-col justify-center">
+    <div className="space-y-4 max-w-4xl px-4 min-h-40 sm:min-h-50 flex flex-col justify-center">
       <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight transition-colors duration-300">
         <span className="block mb-2">Don't Agree Blindly.</span>
         <span className="text-indigo-600 dark:text-indigo-400 block h-[1.2em] transition-colors duration-300">
@@ -244,7 +244,7 @@ const HeroSection = ({ onUpload, status, progress }) => (
         </label>
       ) : (
         /* In-Place Loader */
-        <div className="flex flex-col items-center justify-center w-full h-64 rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-8 animate-in fade-in zoom-in-95 duration-300 transition-colors duration-300">
+        <div className="flex flex-col items-center justify-center w-full h-64 rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-8 animate-in fade-in zoom-in-95 transition-colors duration-300">
           <div className="w-full max-w-md space-y-6">
             <div className="flex flex-col items-center gap-4">
               {status === 'analyzing' ? (
