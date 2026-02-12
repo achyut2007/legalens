@@ -234,7 +234,7 @@ const HeroSection = ({ onUpload, status, progress }) => (
               <UploadCloud className="w-10 h-10 text-indigo-600 dark:text-indigo-400 animate-float" />
             </div>
             <p className="mb-2 text-lg font-semibold text-slate-700 dark:text-slate-200 transition-colors duration-300">
-              Click to upload or drag and drop
+              Click to upload
             </p>
             <p className="text-sm text-slate-500 dark:text-slate-400 transition-colors duration-300">
               PDF, DOCX, or TXT (Max 10MB)
